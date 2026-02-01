@@ -19,7 +19,7 @@ A modern React-based food delivery application with real-time order tracking, bu
 - **Routing**: React Router DOM
 - **API**: REST API with Spring Boot backend
 - **Testing**: Vitest, React Testing Library
-- **CI/CD**: Jenkins Pipeline
+- **CI/CD**: GitHub Actions (recommended) or Jenkins
 
 ## 📦 Installation
 
@@ -69,7 +69,7 @@ npm run format:check
 npm run lint
 
 # Run all CI checks locally
-npm run ci [WIP]
+npm run ci
 ```
 
 ## 🧪 Testing
@@ -120,7 +120,8 @@ FoodHub/
 │   ├── types/              # TypeScript types
 │   ├── test/               # Test utilities
 │   └── assets/             # Static assets
-├── Jenkinsfile[WIP]             # CI/CD pipeline
+├── .github/workflows/          # GitHub Actions workflows
+├── Jenkinsfile                 # Jenkins pipeline (alternative)
 ├── vitest.config.ts        # Vitest configuration
 └── package.json
 ```
@@ -167,9 +168,9 @@ Built with shadcn/ui components:
 
 1. Create a feature branch
 2. Make your changes
-3. Run `npm run ci` to ensure all checks pass
+3. Run `npm run ci` to ensure all checks pass locally
 4. Push and create a pull request
-5. Jenkins will automatically run checks
+5. GitHub Actions will automatically run checks (or Jenkins if configured)
 
 ## 📄 License
 
@@ -183,4 +184,4 @@ Built with shadcn/ui components:
 
 ---
 
-<!-- **Status Badge**: [![Build Status](http://your-jenkins-url/job/FoodHub-Pipeline/badge/icon)](http://your-jenkins-url/job/FoodHub-Pipeline/) -->
+**CI Status**: ![CI](https://github.com/dhruvrajsinh-7/FoodHub/workflows/CI%20Pipeline/badge.svg)
