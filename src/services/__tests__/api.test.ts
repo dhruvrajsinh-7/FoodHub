@@ -3,7 +3,7 @@ import { apiService } from '../api';
 import type { MenuItem, OrderResponse, CreateOrderRequest, OrderStatus } from '@/types';
 
 // Mock fetch globally
-global.fetch = vi.fn();
+(globalThis as any).fetch = vi.fn();
 
 describe('ApiService', () => {
   beforeEach(() => {
