@@ -1,4 +1,4 @@
-import { expect, afterEach, vi } from 'vitest';
+import { expect, afterEach, vi, beforeEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import '@testing-library/jest-dom/vitest';
@@ -15,9 +15,28 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => children,
 }));
 
+vi.mock('@/components/ui/sheet', async () => {
+  const React = (await import('react')).default;
+
+  return {
+    Sheet: ({ children }: any) => React.createElement('div', { 'data-testid': 'sheet' }, children),
+    SheetContent: ({ children }: any) =>
+      React.createElement('div', { 'data-testid': 'sheet-content' }, children),
+    SheetHeader: ({ children }: any) =>
+      React.createElement('div', { 'data-testid': 'sheet-header' }, children),
+    SheetTitle: ({ children }: any) =>
+      React.createElement('h2', { 'data-testid': 'sheet-title' }, children),
+    SheetFooter: ({ children }: any) =>
+      React.createElement('div', { 'data-testid': 'sheet-footer' }, children),
+  };
+});
+
 // Cleanup after each test
 afterEach(() => {
   cleanup();
+  // Clean up any portal containers
+  const portals = document.querySelectorAll('[data-radix-portal]');
+  portals.forEach(portal => portal.remove());
 });
 
 // Mock window.matchMedia
@@ -43,5 +62,13 @@ global.IntersectionObserver = class IntersectionObserver {
   takeRecords() {
     return [];
   }
+  unobserve() {}
+} as any;
+
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
   unobserve() {}
 } as any;

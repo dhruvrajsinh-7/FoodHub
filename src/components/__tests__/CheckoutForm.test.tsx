@@ -2,20 +2,39 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@/test/utils';
 import userEvent from '@testing-library/user-event';
 import CheckoutForm from '../CheckoutForm';
-import { useCart } from '@/context/CartContext';
 
-vi.mock('@/context/CartContext');
+const mockPlaceOrder = vi.fn();
+vi.mock('@/context/CartContext', () => ({
+  useCart: () => ({
+    items: [{ id: '1', name: 'Pizza', price: 25.99, quantity: 1 }],
+    isCartOpen: true,
+    setIsCartOpen: vi.fn(),
+    addToCart: vi.fn(),
+    removeFromCart: vi.fn(),
+    updateQuantity: vi.fn(),
+    clearCart: vi.fn(),
+    total: 25.99,
+    itemCount: 1,
+    currentOrder: {
+      id: 'order-123',
+      status: 'CONFIRMED',
+      total: 25.99,
+      items: [],
+      customerName: 'John',
+      address: 'Street',
+      phone: '123',
+      createdAt: new Date().toISOString(),
+    },
+    placeOrder: mockPlaceOrder,
+    fetchOrderStatus: vi.fn(),
+  }),
+}));
 
 describe('CheckoutForm', () => {
-  const mockPlaceOrder = vi.fn();
   const mockOnBack = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useCart as any).mockReturnValue({
-      placeOrder: mockPlaceOrder,
-      total: 25.99,
-    });
   });
 
   it('renders all form fields', () => {
@@ -91,7 +110,6 @@ describe('CheckoutForm', () => {
 
   it('calls placeOrder with correct data on valid submission', async () => {
     const user = userEvent.setup();
-    mockPlaceOrder.mockResolvedValue(undefined);
     render(<CheckoutForm onBack={mockOnBack} />);
 
     const nameInput = screen.getByLabelText(/full name/i);

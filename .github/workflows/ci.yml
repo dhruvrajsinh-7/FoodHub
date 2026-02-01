@@ -74,6 +74,8 @@ jobs:
 
       - name: Run tests
         run: npm run test
+        env:
+          NODE_OPTIONS: '--no-warnings'
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
@@ -101,6 +103,8 @@ jobs:
 
       - name: Generate coverage report
         run: npm run test:coverage
+        env:
+          NODE_OPTIONS: '--no-warnings'
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

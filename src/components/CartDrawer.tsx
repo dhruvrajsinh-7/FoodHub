@@ -66,6 +66,7 @@ const CartDrawer = () => {
                           <Button
                             variant="outline"
                             size="icon"
+                            aria-label="Decrease quantity"
                             className="h-8 w-8"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           >
@@ -75,6 +76,7 @@ const CartDrawer = () => {
                           <Button
                             variant="outline"
                             size="icon"
+                            aria-label="Increase quantity"
                             className="h-8 w-8"
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           >
@@ -83,6 +85,7 @@ const CartDrawer = () => {
                           <Button
                             variant="ghost"
                             size="icon"
+                            aria-label="Remove item"
                             className="ml-auto h-8 w-8 text-destructive hover:text-destructive"
                             onClick={() => removeFromCart(item.id)}
                           >
@@ -102,7 +105,12 @@ const CartDrawer = () => {
                   ${total.toFixed(2)}
                 </span>
               </div>
-              <Button className="w-full" size="lg" onClick={() => setShowCheckout(true)}>
+              <Button
+                aria-label="Proceed to checkout"
+                className="w-full"
+                size="lg"
+                onClick={() => setShowCheckout(true)}
+              >
                 Proceed to Checkout
               </Button>
             </SheetFooter>

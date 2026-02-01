@@ -29,6 +29,45 @@ export function CartProvider({ children }: { children: ReactNode }) {
     typeof setInterval
   > | null>(null);
 
+  const startOrderPolling = (orderId: string) => {
+    // Clear any existing polling
+    if (orderPollingInterval) {
+      clearInterval(orderPollingInterval);
+    }
+
+    // Poll every 5 seconds for order status updates
+    const interval = setInterval(async () => {
+      try {
+        const orderResponse = await apiService.getOrderById(orderId);
+        const order: Order = {
+          id: orderResponse.id,
+          items: orderResponse.items.map(item => ({
+            ...item.menuItem,
+            quantity: item.quantity,
+          })),
+          customerName: orderResponse.customerName,
+          address: orderResponse.address,
+          phone: orderResponse.phone,
+          status: orderResponse.status,
+          total: orderResponse.total,
+          createdAt: orderResponse.createdAt,
+        };
+
+        setCurrentOrder(order);
+
+        // Stop polling if order is delivered
+        if (order.status === 'DELIVERED') {
+          clearInterval(interval);
+          setOrderPollingInterval(null);
+        }
+      } catch (error) {
+        console.error('Failed to fetch order status:', error);
+      }
+    }, 5000);
+
+    setOrderPollingInterval(interval);
+  };
+
   // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('foodhub_cart');
@@ -103,45 +142,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setItems([]);
-  };
-
-  const startOrderPolling = (orderId: string) => {
-    // Clear any existing polling
-    if (orderPollingInterval) {
-      clearInterval(orderPollingInterval);
-    }
-
-    // Poll every 5 seconds for order status updates
-    const interval = setInterval(async () => {
-      try {
-        const orderResponse = await apiService.getOrderById(orderId);
-        const order: Order = {
-          id: orderResponse.id,
-          items: orderResponse.items.map(item => ({
-            ...item.menuItem,
-            quantity: item.quantity,
-          })),
-          customerName: orderResponse.customerName,
-          address: orderResponse.address,
-          phone: orderResponse.phone,
-          status: orderResponse.status,
-          total: orderResponse.total,
-          createdAt: orderResponse.createdAt,
-        };
-
-        setCurrentOrder(order);
-
-        // Stop polling if order is delivered
-        if (order.status === 'DELIVERED') {
-          clearInterval(interval);
-          setOrderPollingInterval(null);
-        }
-      } catch (error) {
-        console.error('Failed to fetch order status:', error);
-      }
-    }, 5000);
-
-    setOrderPollingInterval(interval);
   };
 
   const placeOrder = async (customerDetails: { name: string; address: string; phone: string }) => {

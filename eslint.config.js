@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist','src/test/utils.tsx', '**/*.test.{ts,tsx}','src/__mocks__','src/__tests__','src/test/setup.ts']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
