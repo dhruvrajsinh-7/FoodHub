@@ -11,6 +11,11 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10'))
     }
 
+    // Poll SCM every 5 minutes (efficient for Git, safe to ignore CVS warning)
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -25,11 +30,20 @@ pipeline {
             steps {
                 script {
                     echo "Setting up Node.js ${env.NODE_VERSION}"
+                    // Try to use NodeJS plugin first, then fallback to nvm
                     sh '''
-                        if command -v nvm &> /dev/null; then
-                            source ~/.nvm/nvm.sh
-                            nvm use ${NODE_VERSION} || nvm install ${NODE_VERSION}
+                        if [ -d "$HOME/.nvm" ]; then
+                            export NVM_DIR="$HOME/.nvm"
+                            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                            nvm use ${NODE_VERSION} 2>/dev/null || nvm install ${NODE_VERSION}
+                        elif command -v node &> /dev/null; then
+                            echo "Using system Node.js: $(node --version)"
+                        else
+                            echo "Node.js not found. Please install Node.js ${NODE_VERSION} or configure NodeJS plugin in Jenkins"
+                            exit 1
                         fi
+                        node --version
+                        npm --version
                     '''
                 }
             }
