@@ -46,7 +46,6 @@ describe('OrderStatus', () => {
     expect(preparingStep).toBeInTheDocument();
   });
 
-
   it('displays order summary with items', () => {
     render(<OrderStatus />);
 

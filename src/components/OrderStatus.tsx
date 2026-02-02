@@ -65,7 +65,11 @@ const OrderStatusComponent = () => {
                     className="relative flex items-center gap-4"
                   >
                     <motion.div
-                      animate={isCurrent && currentOrder.status !== 'DELIVERED' ? { scale: [1, 1.1, 1] } : {}}
+                      animate={
+                        isCurrent && currentOrder.status !== 'DELIVERED'
+                          ? { scale: [1, 1.1, 1] }
+                          : {}
+                      }
                       transition={{ repeat: Infinity, duration: 1.5 }}
                       className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full ${
                         isCompleted
@@ -104,8 +108,7 @@ const OrderStatusComponent = () => {
             <h3 className="mb-3 font-heading font-semibold text-foreground">Delivery Details</h3>
             <div className="space-y-1 text-sm text-muted-foreground">
               <p>
-                <span className="font-medium text-foreground">Name:</span>{' '}
-                {currentOrder.name}
+                <span className="font-medium text-foreground">Name:</span> {currentOrder.name}
               </p>
               <p>
                 <span className="font-medium text-foreground">Address:</span> {currentOrder.address}

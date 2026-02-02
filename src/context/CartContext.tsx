@@ -44,7 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const order: Order = {
           id: orderData.id,
           items: orderData.orderItems.map(item => ({
-            ...item.item as MenuItem,
+            ...(item.item as MenuItem),
             quantity: item.quantity,
           })),
           name: orderData.user.name,
@@ -53,12 +53,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
           status: orderData.status as OrderStatus,
           total: orderData.totalAmount,
           createdAt: orderData.createdAt,
-        };  
+        };
 
         setCurrentOrder(order);
 
         // Stop polling if order is delivered
-        if ( order.status === 'DELIVERED' || orderData.status === 'DELIVERED') {
+        if (order.status === 'DELIVERED' || orderData.status === 'DELIVERED') {
           clearInterval(interval);
           setOrderPollingInterval(null);
         }
@@ -174,7 +174,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const order: Order = {
         id: orderResponse.data.id,
         items: orderResponse.data.orderItems.map(item => ({
-          ...item.item as MenuItem,
+          ...(item.item as MenuItem),
           quantity: item.quantity,
         })),
         name: orderResponse.data.user.name,
@@ -210,7 +210,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const order: Order = {
         id: orderData.id,
         items: orderData.orderItems.map(item => ({
-          ...item.item as MenuItem,
+          ...(item.item as MenuItem),
           quantity: item.quantity,
         })),
         name: orderData.user.name,
