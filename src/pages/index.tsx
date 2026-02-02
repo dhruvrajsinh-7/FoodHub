@@ -21,9 +21,9 @@ const Index = () => {
     // Try to fetch menu items from API, fallback to local data
     const fetchMenuItems = async () => {
       try {
-        const response: MenuItemResponse = await apiService.getMenuItems();
-        if (response.meta.status === 200 && response.data && response.data.length > 0) {
-          setMenuItems(response.data);
+        const response = await apiService.getMenuItems();
+        if (response && Array.isArray(response) && response.length > 0) {
+          setMenuItems(response);
         }
       } catch (error) {
         console.warn('Failed to fetch menu items from API, using fallback data:', error);
