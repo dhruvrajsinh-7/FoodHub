@@ -8,7 +8,7 @@ import CartDrawer from '@/components/CartDrawer';
 import { menuItems as fallbackMenuItems } from '@/data/menuItems.ts';
 import { useCart } from '@/context/CartContext';
 import { apiService } from '@/services/api';
-import type { MenuItem, MenuItemResponse } from '@/types';
+import type { MenuItem } from '@/types';
 
 const Index = () => {
   const { currentOrder } = useCart();
