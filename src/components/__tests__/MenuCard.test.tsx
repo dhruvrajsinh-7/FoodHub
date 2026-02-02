@@ -38,11 +38,11 @@ vi.mock('sonner', () => ({
 
 describe('MenuCard', () => {
   const mockMenuItem: MenuItem = {
-    id: '1',
+    id: 1,
     name: 'Pepperoni Pizza',
     description: 'Classic pepperoni pizza',
     price: 16.99,
-    image: '/pizza.png',
+    imageUrl: '/pizza.png',
     category: 'Pizza',
   };
 
@@ -71,8 +71,8 @@ describe('MenuCard', () => {
 
   it('displays item image with correct alt text', () => {
     render(<MenuCard item={mockMenuItem} index={0} />);
-    const image = screen.getByAltText('Pepperoni Pizza');
+    const image = screen.getByAltText(mockMenuItem.name);
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src', '/pizza.png');
+    expect(image).toHaveAttribute('src', mockMenuItem.imageUrl);
   });
 });

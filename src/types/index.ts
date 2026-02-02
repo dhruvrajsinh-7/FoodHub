@@ -1,9 +1,9 @@
 export interface MenuItem {
-  id: string;
+  id: number;
   name: string;
   description: string;
   price: number;
-  image: string;
+  imageUrl: string;
   category: string;
 }
 
@@ -12,9 +12,9 @@ export interface CartItem extends MenuItem {
 }
 
 export interface Order {
-  id: string;
+  id: number;
   items: CartItem[];
-  customerName: string;
+  name: string;
   address: string;
   phone: string;
   status: OrderStatus;
@@ -26,24 +26,55 @@ export type OrderStatus = 'RECEIVED' | 'PREPARING' | 'OUT_FOR_DELIVERY' | 'DELIV
 
 export interface CreateOrderRequest {
   items: Array<{
-    menuItemId: string;
+    menuItemId: number;
     quantity: number;
   }>;
-  customerName: string;
+  name: string;
   address: string;
   phone: string;
 }
 
 export interface OrderResponse {
-  id: string;
-  items: Array<{
-    menuItem: MenuItem;
-    quantity: number;
-  }>;
-  customerName: string;
-  address: string;
-  phone: string;
-  status: OrderStatus;
-  total: number;
-  createdAt: string;
+  meta: {
+    message: string;
+    requestUuid: string;
+    responseType: {
+      context: string;
+      code: number;
+    };
+    timestamp: string;
+    status: number;
+  };
+  data: {
+    id: number;
+    user: {
+      id: number;
+      name: string;
+      phone: string;
+      address: string;
+    };
+    status: OrderStatus;
+    totalAmount: number;
+    createdAt: string;
+    updatedAt: string;
+    orderItems: Array<{
+      id: number;
+      item: MenuItem;
+      quantity: number;
+    }>;
+  };
+}
+
+export interface MenuItemResponse {
+  meta: {
+    message: string;
+    requestUuid: string;
+    responseType: {
+      context: string;
+      code: number;
+    };
+    timestamp: string;
+    status: number;
+  };
+  data: MenuItem[];
 }

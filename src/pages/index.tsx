@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import MenuCard from '@/components/MenuCard';
@@ -8,11 +8,12 @@ import CartDrawer from '@/components/CartDrawer';
 import { menuItems as fallbackMenuItems } from '@/data/menuItems.ts';
 import { useCart } from '@/context/CartContext';
 import { apiService } from '@/services/api';
-import type { MenuItem } from '@/types';
+import type { MenuItem, MenuItemResponse } from '@/types';
 
 const Index = () => {
   const { currentOrder } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuItems, setMenuItems] = useState<MenuItem[]>(fallbackMenuItems);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -20,9 +21,9 @@ const Index = () => {
     // Try to fetch menu items from API, fallback to local data
     const fetchMenuItems = async () => {
       try {
-        const items = await apiService.getMenuItems();
-        if (items && items.length > 0) {
-          setMenuItems(items);
+        const response: MenuItemResponse = await apiService.getMenuItems();
+        if (response.meta.status === 200 && response.data && response.data.length > 0) {
+          setMenuItems(response.data);
         }
       } catch (error) {
         console.warn('Failed to fetch menu items from API, using fallback data:', error);
@@ -36,11 +37,13 @@ const Index = () => {
   }, []);
 
   // Navigate to order status page if order exists
+  // Don't redirect if user explicitly navigated from order page (via location state)
   useEffect(() => {
-    if (currentOrder) {
+    const fromOrder = location.state?.fromOrder === true;
+    if (currentOrder && !fromOrder) {
       navigate(`/order/${currentOrder.id}`, { replace: true });
     }
-  }, [currentOrder, navigate]);
+  }, [currentOrder, navigate, location.state]);
 
   if (isLoading) {
     return (

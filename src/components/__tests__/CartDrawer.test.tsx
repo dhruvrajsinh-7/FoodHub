@@ -6,19 +6,19 @@ import type { CartItem } from '@/types';
 
 let mockItems: CartItem[] = [
   {
-    id: '1',
+    id: 1,
     name: 'Pizza',
     description: 'Delicious pizza',
-    image: '/pizza.png',
+    imageUrl: '/pizza.png',
     category: 'Italian',
     price: 15.99,
     quantity: 2,
   },
   {
-    id: '2',
+    id: 2,
     name: 'Burger',
     description: 'Juicy burger',
-    image: '/burger.png',
+    imageUrl: '/burger.png',
     category: 'American',
     price: 12.99,
     quantity: 1,
@@ -50,19 +50,19 @@ describe('CartDrawer', () => {
 
     mockItems = [
       {
-        id: '1',
+        id: 1,
         name: 'Pizza',
         description: 'Delicious pizza',
-        image: '/pizza.png',
+        imageUrl: '/pizza.png',
         category: 'Italian',
         price: 15.99,
         quantity: 2,
       },
       {
-        id: '2',
+        id: 2,
         name: 'Burger',
         description: 'Juicy burger',
-        image: '/burger.png',
+        imageUrl: '/burger.png',
         category: 'American',
         price: 12.99,
         quantity: 1,
@@ -96,7 +96,7 @@ describe('CartDrawer', () => {
     const plusButton = screen.getAllByLabelText('Increase quantity')[0];
     await user.click(plusButton);
 
-    expect(mockUpdateQuantity).toHaveBeenCalledWith('1', 3);
+    expect(mockUpdateQuantity).toHaveBeenCalledWith(1, 3);
   });
 
   it('removes item when remove button is clicked', async () => {
@@ -106,7 +106,7 @@ describe('CartDrawer', () => {
     // Find remove buttons (trash icons)
     const removeButton = screen.getAllByLabelText('Remove item')[0];
     await user.click(removeButton);
-    expect(mockRemoveFromCart).toHaveBeenCalledWith('1');
+    expect(mockRemoveFromCart).toHaveBeenCalledWith(1);
   });
 
   it('displays correct total amount', () => {

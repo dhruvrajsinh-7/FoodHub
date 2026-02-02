@@ -51,7 +51,7 @@ const CartDrawer = () => {
                       className="flex gap-4 rounded-xl bg-secondary/50 p-3"
                     >
                       <img
-                        src={item.image}
+                        src={item.imageUrl}
                         alt={item.name}
                         className="h-20 w-20 rounded-lg object-cover"
                       />

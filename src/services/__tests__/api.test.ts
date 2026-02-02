@@ -20,11 +20,11 @@ describe('ApiService', () => {
     it('should fetch menu items successfully', async () => {
       const mockMenuItems: MenuItem[] = [
         {
-          id: '1',
+          id: 1,
           name: 'Pizza',
           description: 'Delicious pizza',
           price: 15.99,
-          image: '/pizza.png',
+          imageUrl: '/pizza.png',
           category: 'Italian',
         },
       ];
@@ -56,11 +56,11 @@ describe('ApiService', () => {
   describe('getMenuItemById', () => {
     it('should fetch a single menu item by ID', async () => {
       const mockMenuItem: MenuItem = {
-        id: '1',
+        id: 1,
         name: 'Pizza',
         description: 'Delicious pizza',
         price: 15.99,
-        image: '/pizza.png',
+        imageUrl: '/pizza.png',
         category: 'Italian',
       };
 
@@ -81,33 +81,50 @@ describe('ApiService', () => {
   describe('createOrder', () => {
     it('should create an order successfully', async () => {
       const orderData: CreateOrderRequest = {
-        items: [{ menuItemId: '1', quantity: 2 }],
-        customerName: 'John Doe',
+        items: [{ menuItemId: 1, quantity: 2 }],
+        name: 'John Doe',
         address: '123 Main St',
         phone: '5551234567',
       };
 
       const mockOrderResponse: OrderResponse = {
-        id: 'order-123',
-        items: [
-          {
-            menuItem: {
-              id: '1',
-              name: 'Pizza',
-              description: 'Delicious pizza',
-              price: 15.99,
-              image: '/pizza.png',
-              category: 'Italian',
-            },
-            quantity: 2,
+        meta: {
+          message: 'Order created successfully',
+          requestUuid: '1234567890',
+          responseType: {
+            context: 'Order created successfully',
+            code: 200,
           },
-        ],
-        customerName: 'John Doe',
-        address: '123 Main St',
-        phone: '5551234567',
-        status: 'RECEIVED',
-        total: 31.98,
-        createdAt: new Date().toISOString(),
+          timestamp: new Date().toISOString(),
+          status: 200,
+        },
+        data: {
+          id: 1,
+          user: {
+            id: 1,
+            name: 'John Doe',
+            phone: '5551234567',
+            address: '123 Main St',
+          },
+          status: 'RECEIVED',
+          totalAmount: 31.98,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          orderItems: [
+            {
+              id: 1,
+              item: {
+                id: 1,
+                name: 'Pizza',
+                description: 'Delicious pizza',
+                price: 15.99,
+                imageUrl: '/pizza.png',
+                category: 'Italian',
+              },
+              quantity: 2,
+            },
+          ],
+        },
       };
 
       (fetch as any).mockResolvedValueOnce({
@@ -128,7 +145,7 @@ describe('ApiService', () => {
     it('should handle validation errors', async () => {
       const invalidOrderData: CreateOrderRequest = {
         items: [],
-        customerName: '',
+        name: '',
         address: '',
         phone: '',
       };
@@ -146,14 +163,30 @@ describe('ApiService', () => {
   describe('getOrderById', () => {
     it('should fetch an order by ID', async () => {
       const mockOrder: OrderResponse = {
-        id: 'order-123',
-        items: [],
-        customerName: 'John Doe',
-        address: '123 Main St',
-        phone: '5551234567',
-        status: 'RECEIVED',
-        total: 25.99,
-        createdAt: new Date().toISOString(),
+        meta: {
+          message: 'Order created successfully',
+          requestUuid: '1234567890',
+          responseType: {
+            context: 'Order created successfully',
+            code: 200,
+          },
+          timestamp: new Date().toISOString(),
+          status: 200,
+        },
+        data: {
+          id: 1,
+          user: {
+            id: 1,
+            name: 'John Doe',
+            phone: '5551234567',
+            address: '123 Main St',
+          },
+          status: 'RECEIVED',
+          totalAmount: 25.99,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          orderItems: [],
+        },
       };
 
       (fetch as any).mockResolvedValueOnce({
@@ -161,9 +194,9 @@ describe('ApiService', () => {
         json: async () => mockOrder,
       });
 
-      const result = await apiService.getOrderById('order-123');
+      const result = await apiService.getOrderById(1);
 
-      expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/orders/order-123', {
+      expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/orders/1', {
         headers: { 'Content-Type': 'application/json' },
       });
       expect(result).toEqual(mockOrder);
@@ -176,7 +209,7 @@ describe('ApiService', () => {
         json: async () => ({ message: 'Order not found' }),
       });
 
-      await expect(apiService.getOrderById('invalid-id')).rejects.toThrow();
+      await expect(apiService.getOrderById(1)).rejects.toThrow();
     });
   });
 
@@ -184,16 +217,32 @@ describe('ApiService', () => {
     it('should fetch all orders', async () => {
       const mockOrders: OrderResponse[] = [
         {
-          id: 'order-1',
-          items: [],
-          customerName: 'John Doe',
-          address: '123 Main St',
-          phone: '5551234567',
-          status: 'RECEIVED',
-          total: 25.99,
-          createdAt: new Date().toISOString(),
+          meta: {
+            message: 'Order created successfully',
+            requestUuid: '1234567890',
+            responseType: {
+              context: 'Order created successfully',
+              code: 200,
+            },
+            timestamp: new Date().toISOString(),
+            status: 200,
+          },
+          data: {
+            id: 1,
+            user: {
+              id: 1,
+              name: 'John Doe',
+              phone: '5551234567',
+              address: '123 Main St',
+            },
+            status: 'RECEIVED',
+            totalAmount: 25.99,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            orderItems: [],
+          },
         },
-      ];
+      ] as OrderResponse[];
 
       (fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -213,14 +262,30 @@ describe('ApiService', () => {
     it('should update order status successfully', async () => {
       const status: OrderStatus = 'PREPARING';
       const mockUpdatedOrder: OrderResponse = {
-        id: 'order-123',
-        items: [],
-        customerName: 'John Doe',
-        address: '123 Main St',
-        phone: '5551234567',
-        status: 'PREPARING',
-        total: 25.99,
-        createdAt: new Date().toISOString(),
+        meta: {
+          message: 'Order updated successfully',
+          requestUuid: '1234567890',
+          responseType: {
+            context: 'Order updated successfully',
+            code: 200,
+          },
+          timestamp: new Date().toISOString(),
+          status: 200,
+        },
+        data: {
+          id: 1,
+          user: {
+            id: 1,
+            name: 'John Doe',
+            phone: '5551234567',
+            address: '123 Main St',
+          },
+          status: 'PREPARING',
+          totalAmount: 25.99,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          orderItems: [],
+        },
       };
 
       (fetch as any).mockResolvedValueOnce({
@@ -228,14 +293,14 @@ describe('ApiService', () => {
         json: async () => mockUpdatedOrder,
       });
 
-      const result = await apiService.updateOrderStatus('order-123', status);
+      const result = await apiService.updateOrderStatus(1, status);
 
-      expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/orders/order-123/status', {
+      expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/orders/1/status', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       });
-      expect(result.status).toBe('PREPARING');
+      expect(result.data.status).toBe('PREPARING');
     });
 
     it('should handle invalid status updates', async () => {
@@ -246,7 +311,7 @@ describe('ApiService', () => {
       });
 
       await expect(
-        apiService.updateOrderStatus('order-123', 'INVALID_STATUS' as OrderStatus)
+        apiService.updateOrderStatus(1, 'INVALID_STATUS' as OrderStatus)
       ).rejects.toThrow();
     });
   });

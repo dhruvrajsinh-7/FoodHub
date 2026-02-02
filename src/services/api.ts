@@ -52,7 +52,7 @@ class ApiService {
     });
   }
 
-  async getOrderById(orderId: string): Promise<OrderResponse> {
+  async getOrderById(orderId: number): Promise<OrderResponse> {
     return this.request<OrderResponse>(`/orders/${orderId}`);
   }
 
@@ -60,7 +60,7 @@ class ApiService {
     return this.request<OrderResponse[]>('/orders');
   }
 
-  async updateOrderStatus(orderId: string, status: OrderStatus): Promise<OrderResponse> {
+  async updateOrderStatus(orderId: number, status: OrderStatus): Promise<OrderResponse> {
     return this.request<OrderResponse>(`/orders/${orderId}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),

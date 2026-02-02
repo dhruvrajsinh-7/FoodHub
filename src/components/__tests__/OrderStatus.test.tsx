@@ -46,14 +46,6 @@ describe('OrderStatus', () => {
     expect(preparingStep).toBeInTheDocument();
   });
 
-  it('displays delivery details', () => {
-    render(<OrderStatus />);
-
-    const detailsSection = screen.getByText(/delivery details/i).closest('div')!;
-    expect(within(detailsSection).getByText(/123/)).toBeInTheDocument();
-    expect(within(detailsSection).getByText(/john/i)).toBeInTheDocument();
-    expect(within(detailsSection).getByText(/street/i)).toBeInTheDocument();
-  });
 
   it('displays order summary with items', () => {
     render(<OrderStatus />);

@@ -65,7 +65,7 @@ const OrderStatusComponent = () => {
                     className="relative flex items-center gap-4"
                   >
                     <motion.div
-                      animate={isCurrent ? { scale: [1, 1.1, 1] } : {}}
+                      animate={isCurrent && currentOrder.status !== 'DELIVERED' ? { scale: [1, 1.1, 1] } : {}}
                       transition={{ repeat: Infinity, duration: 1.5 }}
                       className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full ${
                         isCompleted
@@ -83,7 +83,7 @@ const OrderStatusComponent = () => {
                       >
                         {step.label}
                       </p>
-                      {isCurrent && (
+                      {isCurrent && currentOrder.status !== 'DELIVERED' && (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                           <Badge variant="secondary" className="mt-1 text-xs">
                             In progress...
@@ -105,7 +105,7 @@ const OrderStatusComponent = () => {
             <div className="space-y-1 text-sm text-muted-foreground">
               <p>
                 <span className="font-medium text-foreground">Name:</span>{' '}
-                {currentOrder.customerName}
+                {currentOrder.name}
               </p>
               <p>
                 <span className="font-medium text-foreground">Address:</span> {currentOrder.address}

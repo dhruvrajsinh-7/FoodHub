@@ -29,7 +29,7 @@ const MenuCard = ({ item, index }: MenuCardProps) => {
       <Card className="group h-full overflow-hidden shadow-soft transition-all duration-300 hover:shadow-elevated hover:-translate-y-1">
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
-            src={item.image}
+            src={item.imageUrl}
             alt={item.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />

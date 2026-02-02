@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { MenuItem, CartItem, Order } from '@/types';
+import type { MenuItem, CartItem, Order, OrderStatus } from '@/types';
 import { apiService } from '@/services/api';
 import { toast } from 'sonner';
 
@@ -9,14 +9,15 @@ interface CartContextType {
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   addToCart: (item: MenuItem) => void;
-  removeFromCart: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number) => void;
+  removeFromCart: (itemId: number) => void;
+  updateQuantity: (itemId: number, quantity: number) => void;
   clearCart: () => void;
   total: number;
   itemCount: number;
   currentOrder: Order | null;
   placeOrder: (customerDetails: { name: string; address: string; phone: string }) => Promise<void>;
-  fetchOrderStatus: (orderId: string) => Promise<void>;
+  fetchOrderStatus: (orderId: number) => Promise<void>;
+  clearCurrentOrder: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -29,7 +30,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     typeof setInterval
   > | null>(null);
 
-  const startOrderPolling = (orderId: string) => {
+  const startOrderPolling = (orderId: number) => {
     // Clear any existing polling
     if (orderPollingInterval) {
       clearInterval(orderPollingInterval);
@@ -39,31 +40,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const interval = setInterval(async () => {
       try {
         const orderResponse = await apiService.getOrderById(orderId);
+        const orderData = orderResponse.data;
         const order: Order = {
-          id: orderResponse.id,
-          items: orderResponse.items.map(item => ({
-            ...item.menuItem,
+          id: orderData.id,
+          items: orderData.orderItems.map(item => ({
+            ...item.item as MenuItem,
             quantity: item.quantity,
           })),
-          customerName: orderResponse.customerName,
-          address: orderResponse.address,
-          phone: orderResponse.phone,
-          status: orderResponse.status,
-          total: orderResponse.total,
-          createdAt: orderResponse.createdAt,
-        };
+          name: orderData.user.name,
+          address: orderData.user.address,
+          phone: orderData.user.phone,
+          status: orderData.status as OrderStatus,
+          total: orderData.totalAmount,
+          createdAt: orderData.createdAt,
+        };  
 
         setCurrentOrder(order);
 
         // Stop polling if order is delivered
-        if (order.status === 'DELIVERED') {
+        if ( order.status === 'DELIVERED' || orderData.status === 'DELIVERED') {
           clearInterval(interval);
           setOrderPollingInterval(null);
         }
       } catch (error) {
         console.error('Failed to fetch order status:', error);
       }
-    }, 5000);
+    }, 30000);
 
     setOrderPollingInterval(interval);
   };
@@ -85,8 +87,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const order = JSON.parse(savedOrder);
         setCurrentOrder(order);
-        // Start polling for order status updates
-        startOrderPolling(order.id);
+        startOrderPolling(parseInt(order.id));
       } catch (error) {
         console.error('Failed to load order from localStorage:', error);
       }
@@ -126,11 +127,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeFromCart = (itemId: string) => {
+  const removeFromCart = (itemId: number) => {
     setItems(prevItems => prevItems.filter(item => item.id !== itemId));
   };
 
-  const updateQuantity = (itemId: string, quantity: number) => {
+  const updateQuantity = (itemId: number, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(itemId);
       return;
@@ -144,6 +145,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
   };
 
+  const clearCurrentOrder = () => {
+    // Stop polling if active
+    if (orderPollingInterval) {
+      clearInterval(orderPollingInterval);
+      setOrderPollingInterval(null);
+    }
+    setCurrentOrder(null);
+    localStorage.removeItem('foodhub_current_order');
+  };
+
   const placeOrder = async (customerDetails: { name: string; address: string; phone: string }) => {
     try {
       const orderData = {
@@ -151,25 +162,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
           menuItemId: item.id,
           quantity: item.quantity,
         })),
-        customerName: customerDetails.name,
+        name: customerDetails.name,
         address: customerDetails.address,
         phone: customerDetails.phone,
       };
 
       const orderResponse = await apiService.createOrder(orderData);
-
+      if (orderResponse.meta.status !== 200) {
+        throw new Error(orderResponse.meta.message);
+      }
       const order: Order = {
-        id: orderResponse.id,
-        items: orderResponse.items.map(item => ({
-          ...item.menuItem,
+        id: orderResponse.data.id,
+        items: orderResponse.data.orderItems.map(item => ({
+          ...item.item as MenuItem,
           quantity: item.quantity,
         })),
-        customerName: orderResponse.customerName,
-        address: orderResponse.address,
-        phone: orderResponse.phone,
-        status: orderResponse.status,
-        total: orderResponse.total,
-        createdAt: orderResponse.createdAt,
+        name: orderResponse.data.user.name,
+        address: orderResponse.data.user.address,
+        phone: orderResponse.data.user.phone,
+        status: orderResponse.data.status as OrderStatus,
+        total: orderResponse.data.totalAmount,
+        createdAt: orderResponse.data.createdAt,
       };
 
       setCurrentOrder(order);
@@ -187,21 +200,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const fetchOrderStatus = async (orderId: string) => {
+  const fetchOrderStatus = async (orderId: number) => {
     try {
       const orderResponse = await apiService.getOrderById(orderId);
+      if (orderResponse.meta.status !== 200) {
+        throw new Error(orderResponse.meta.message);
+      }
+      const orderData = orderResponse.data;
       const order: Order = {
-        id: orderResponse.id,
-        items: orderResponse.items.map(item => ({
-          ...item.menuItem,
+        id: orderData.id,
+        items: orderData.orderItems.map(item => ({
+          ...item.item as MenuItem,
           quantity: item.quantity,
         })),
-        customerName: orderResponse.customerName,
-        address: orderResponse.address,
-        phone: orderResponse.phone,
-        status: orderResponse.status,
-        total: orderResponse.total,
-        createdAt: orderResponse.createdAt,
+        name: orderData.user.name,
+        address: orderData.user.address,
+        phone: orderData.user.phone,
+        status: orderData.status as OrderStatus,
+        total: orderData.totalAmount,
+        createdAt: orderData.createdAt,
       };
 
       setCurrentOrder(order);
@@ -229,6 +246,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         currentOrder,
         placeOrder,
         fetchOrderStatus,
+        clearCurrentOrder,
       }}
     >
       {children}
