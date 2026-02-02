@@ -126,7 +126,26 @@ FoodHub/
 └── package.json
 ```
 
-## 🚢 CI/CD Pipeline
+## 🚢 Deployment
+
+### Vercel Deployment
+
+The project is configured for easy deployment on Vercel:
+
+1. **Connect your repository** to Vercel
+2. **Configure environment variables** in Vercel dashboard:
+   - `VITE_API_BASE_URL` - Your backend API URL (e.g., `https://your-api.vercel.app/api`)
+   - `VITE_ENV` - Environment (e.g., `production`)
+3. **Deploy** - Vercel will automatically detect the Vite configuration and deploy
+
+The `vercel.json` file includes:
+- ✅ SPA routing configuration (all routes serve `index.html`)
+- ✅ Asset caching headers for optimal performance
+- ✅ Build and output directory settings
+
+**Note**: Make sure to update `VITE_API_BASE_URL` in Vercel's environment variables to point to your production API.
+
+### CI/CD Pipeline
 
 The project includes a Jenkins pipeline that runs on every push/PR:
 
