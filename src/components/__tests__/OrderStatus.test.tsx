@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@/test/utils';
+import { render, screen } from '@/test/utils';
 import OrderStatus from '../OrderStatus';
 
 vi.mock('@/context/CartContext', () => ({
