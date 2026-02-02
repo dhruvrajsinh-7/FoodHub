@@ -1,0 +1,53 @@
+# Simpler single-job workflow (faster, runs sequentially)
+name: CI Pipeline (Simple)
+
+on:
+  push:
+    branches: [ main, dev, 'feature/**' ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  ci:
+    name: CI Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+        env:
+          NODE_OPTIONS: '--experimental-vm-modules'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check code formatting
+        run: npm run format:check
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npm run test
+        env:
+          NODE_OPTIONS: '--experimental-vm-modules'
+
+      - name: Generate coverage
+        run: npm run test:coverage
+        continue-on-error: true
+
+      - name: Build application
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
