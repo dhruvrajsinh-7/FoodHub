@@ -21,10 +21,8 @@ const Index = () => {
     // Try to fetch menu items from API, fallback to local data
     const fetchMenuItems = async () => {
       try {
-        const response = await apiService.getMenuItems();
-        if (response && Array.isArray(response) && response.length > 0) {
-          setMenuItems(response);
-        }
+        const items = await apiService.getMenuItems();
+        setMenuItems(items);
       } catch (error) {
         console.warn('Failed to fetch menu items from API, using fallback data:', error);
         // Use fallback data - already set as default
@@ -72,7 +70,7 @@ const Index = () => {
           <p className="text-muted-foreground">Choose from our selection of delicious dishes</p>
         </motion.div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {menuItems.map((item, index) => (
+          {menuItems?.map((item, index) => (
             <MenuCard key={item.id} item={item} index={index} />
           ))}
         </div>

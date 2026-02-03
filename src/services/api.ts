@@ -1,4 +1,10 @@
-import type { MenuItem, OrderResponse, CreateOrderRequest, OrderStatus } from '@/types';
+import type {
+  MenuItem,
+  OrderResponse,
+  CreateOrderRequest,
+  OrderStatus,
+  MenuItemResponse,
+} from '@/types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
@@ -37,7 +43,8 @@ class ApiService {
 
   // Menu endpoints
   async getMenuItems(): Promise<MenuItem[]> {
-    return this.request<MenuItem[]>('/menu');
+    const response = await this.request<MenuItemResponse>('/menu');
+    return response.data;
   }
 
   async getMenuItemById(id: string): Promise<MenuItem> {

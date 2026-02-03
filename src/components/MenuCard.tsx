@@ -34,9 +34,11 @@ const MenuCard = ({ item, index }: MenuCardProps) => {
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-          <Badge variant="secondary" className="absolute left-3 top-3">
-            {item.category}
-          </Badge>
+          {item?.category && (
+            <Badge variant="secondary" className="absolute left-3 top-3">
+              {item.category}
+            </Badge>
+          )}
         </div>
         <CardContent className="p-5">
           <div className="mb-3 flex items-start justify-between gap-2">
