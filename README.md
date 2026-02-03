@@ -134,7 +134,7 @@ The project is configured for easy deployment on Vercel:
 
 1. **Connect your repository** to Vercel
 2. **Configure environment variables** in Vercel dashboard:
-   - `VITE_API_BASE_URL` - Your backend API URL (e.g., `https://your-api.vercel.app/api`)
+   - `VITE_API_BASE_URL` - Your backend API URL (e.g., `spring-be-foodhub-production.up.railway.app`)
    - `VITE_ENV` - Environment (e.g., `production`)
 3. **Deploy** - Vercel will automatically detect the Vite configuration and deploy
 

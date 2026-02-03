@@ -1,6 +1,6 @@
 import type { MenuItem, OrderResponse, CreateOrderRequest, OrderStatus } from '@/types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 class ApiService {
   private baseUrl: string;
@@ -10,7 +10,7 @@ class ApiService {
   }
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
+    const url = `${this.baseUrl}/api${endpoint}`;
 
     const config: RequestInit = {
       headers: {
